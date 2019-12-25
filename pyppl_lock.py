@@ -2,7 +2,7 @@ import filelock
 from pyppl.plugin import hookimpl
 from pyppl.logger import logger
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 @hookimpl
 def proc_init(proc):
@@ -11,7 +11,7 @@ def proc_init(proc):
 @hookimpl
 def proc_prerun(proc):
 	lockfile = proc.workdir / 'proc.lock'
-	lock = proc.plugin_config.lock_lock = filelock.FileLock(lockfile)
+	lock = proc.config.lock_lock = filelock.FileLock(lockfile)
 	try:
 		lock.acquire(timeout = 3)
 	except filelock.Timeout:
@@ -31,10 +31,10 @@ def proc_prerun(proc):
 def proc_postrun(proc, status):
 	"""We should remove the lock file anyway"""
 	lockfile = proc.workdir / 'proc.lock'
-	if isinstance(proc.plugin_config.lock_lock, filelock.FileLock) and \
-		proc.plugin_config.lock_lock.is_locked:
+	if isinstance(proc.config.lock_lock, filelock.FileLock) and \
+		proc.config.lock_lock.is_locked:
 
-		proc.plugin_config.lock_lock.release()
+		proc.config.lock_lock.release()
 
 	if lockfile.is_file():
 		lockfile.unlink()
