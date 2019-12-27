@@ -15,7 +15,7 @@ readme = ''
 setup(
     long_description=readme,
     name='pyppl_lock',
-    version='0.0.2',
+    version='0.0.3',
     description='Preventing running processes from running again for PyPPL',
     python_requires='==3.*,>=3.6.0',
     author='pwwang',
