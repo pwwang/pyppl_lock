@@ -1,3 +1,4 @@
+"""Preventing running processes from running again for PyPPL"""
 import filelock
 from pyppl.plugin import hookimpl
 from pyppl.logger import logger
@@ -6,12 +7,14 @@ __version__ = "0.0.2"
 
 @hookimpl
 def proc_init(proc):
+	"""Add a config for lock"""
 	proc.add_config('lock_lock')
 
 @hookimpl
 def proc_prerun(proc):
+	"""Try to access the lock"""
 	lockfile = proc.workdir / 'proc.lock'
-	lock = proc.config.lock_lock = filelock.FileLock(lockfile)
+	lock = proc.config.lock_lock = filelock.SoftFileLock(lockfile)
 	try:
 		lock.acquire(timeout = 3)
 	except filelock.Timeout:
@@ -23,18 +26,18 @@ def proc_prerun(proc):
 		logger.warning('- %s', lockfile, proc = proc.id)
 		try:
 			lock.acquire()
-		except KeyboardInterrupt:
+		except KeyboardInterrupt: # pragma: no cover
 			lockfile.unlink()
 			lock.acquire()
 
 @hookimpl
-def proc_postrun(proc, status):
+def proc_postrun(proc, status): # pylint: disable=unused-argument
 	"""We should remove the lock file anyway"""
 	lockfile = proc.workdir / 'proc.lock'
-	if isinstance(proc.config.lock_lock, filelock.FileLock) and \
+	if isinstance(proc.config.lock_lock, filelock.SoftFileLock) and \
 		proc.config.lock_lock.is_locked:
 
 		proc.config.lock_lock.release()
 
-	if lockfile.is_file():
+	if lockfile.is_file(): # pragma: no cover
 		lockfile.unlink()

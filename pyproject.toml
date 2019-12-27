@@ -8,9 +8,12 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.6"
 pyppl = "*"
-filelock = "^3.0.0"
+filelock = "^3"
 
 [tool.poetry.dev-dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-timeout = "*"
 
 [build-system]
 requires = ["poetry>=0.12"]
