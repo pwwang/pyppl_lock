@@ -17,7 +17,6 @@ filelock = "^3"
 [tool.poetry.dev-dependencies]
 pytest = "*"
 pytest-cov = "*"
-pytest-timeout = "*"
 
 [tool.poetry.plugins.pyppl]
 pyppl_lock = "pyppl_lock"

@@ -26,5 +26,5 @@ setup(
     package_dir={"": "."},
     package_data={},
     install_requires=['filelock==3.*,>=3.0.0', 'pyppl'],
-    extras_require={"dev": ["pytest", "pytest-cov", "pytest-timeout"]},
+    extras_require={"dev": ["pytest", "pytest-cov"]},
 )

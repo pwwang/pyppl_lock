@@ -2,4 +2,3 @@ filelock==3.*,>=3.0.0
 pyppl
 pytest
 pytest-cov
-pytest-timeout
