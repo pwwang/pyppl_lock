@@ -8,13 +8,13 @@ __version__ = "0.0.2"
 @hookimpl
 def proc_init(proc):
 	"""Add a config for lock"""
-	proc.add_config('lock_lock')
+	proc.props.lock_lock = None
 
 @hookimpl
 def proc_prerun(proc):
 	"""Try to access the lock"""
 	lockfile = proc.workdir / 'proc.lock'
-	lock = proc.config.lock_lock = filelock.SoftFileLock(lockfile)
+	lock = proc.props.lock_lock = filelock.SoftFileLock(lockfile)
 	try:
 		lock.acquire(timeout = 3)
 	except filelock.Timeout:
@@ -34,10 +34,10 @@ def proc_prerun(proc):
 def proc_postrun(proc, status): # pylint: disable=unused-argument
 	"""We should remove the lock file anyway"""
 	lockfile = proc.workdir / 'proc.lock'
-	if isinstance(proc.config.lock_lock, filelock.SoftFileLock) and \
-		proc.config.lock_lock.is_locked:
+	if isinstance(proc.props.lock_lock, filelock.SoftFileLock) and \
+		proc.props.lock_lock.is_locked:
 
-		proc.config.lock_lock.release()
+		proc.props.lock_lock.release()
 
 	if lockfile.is_file(): # pragma: no cover
 		lockfile.unlink()
