@@ -3,8 +3,9 @@ import pytest
 import cmdy
 from filelock import SoftFileLock
 from time import sleep
+from diot import Diot
 from pyppl import Proc
-from pyppl_lock import proc_init, proc_prerun, proc_postrun
+from pyppl_lock import proc_init, proc_prerun, proc_postrun, job_build
 
 def test_init(tmp_path):
 	pLockInit = Proc(ppldir = tmp_path)
@@ -26,8 +27,8 @@ def test_run(tmp_path, caplog):
 	assert not pLockPrerun.workdir.joinpath('proc.lock').is_file()
 
 @pytest.fixture
-def locked_proc(tmp_path):
-	pLockLocked = Proc(ppldir = tmp_path)
+def locked_proc(request, tmp_path):
+	pLockLocked = Proc(ppldir = tmp_path, tag = request.node.name)
 	proc_init(pLockLocked)
 	pLockLocked.__attrs_property_cached__['workdir'] = pLockLocked.ppldir / 'pLockLocked'
 	pLockLocked.workdir.mkdir()
@@ -56,6 +57,12 @@ def test_locked(locked_proc, tmp_path, caplog):
 
 	caplog.clear()
 	proc_prerun(pTestLocked)
-	print(caplog.text)
+
 	assert 'pTestLocked: Another instance of this process is running, waiting' in caplog.text
+
+def test_job_build(locked_proc, caplog):
+
+	job = Diot(proc = locked_proc)
+	job_build(job, "failed")
+	assert not (job.proc.workdir / 'proc.lock').is_file()
 

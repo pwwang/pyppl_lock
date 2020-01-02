@@ -30,14 +30,25 @@ def proc_prerun(proc):
 			lockfile.unlink()
 			lock.acquire()
 
-@hookimpl
-def proc_postrun(proc, status): # pylint: disable=unused-argument
-	"""We should remove the lock file anyway"""
+def _lock_release(proc):
+	"""Release the lock"""
 	lockfile = proc.workdir / 'proc.lock'
-	if isinstance(proc.props.lock_lock, filelock.SoftFileLock) and \
+	if proc.props.lock_lock and \
+		isinstance(proc.props.lock_lock, filelock.SoftFileLock) and \
 		proc.props.lock_lock.is_locked:
 
 		proc.props.lock_lock.release()
 
 	if lockfile.is_file(): # pragma: no cover
 		lockfile.unlink()
+
+@hookimpl
+def job_build(job, status):
+	"""Job building failure will also cause pipeline halt"""
+	if status == 'failed':
+		_lock_release(job.proc)
+
+@hookimpl
+def proc_postrun(proc, status): # pylint: disable=unused-argument
+	"""We should remove the lock file anyway"""
+	_lock_release(proc)
