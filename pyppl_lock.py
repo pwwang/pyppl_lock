@@ -3,7 +3,7 @@ import filelock
 from pyppl.plugin import hookimpl
 from pyppl.logger import logger
 
-__version__ = "0.0.2"
+__version__ = "0.0.4"
 
 
 @hookimpl
