@@ -1,10 +1,11 @@
 """Preventing running processes from running again for PyPPL"""
 import filelock
 from pyppl.plugin import hookimpl
-from pyppl.logger import logger
+from pyppl.logger import Logger
 
 __version__ = "0.0.4"
 
+logger = Logger(plugin='lock') # pylint: disable=invalid-name
 
 @hookimpl
 def proc_init(proc):
