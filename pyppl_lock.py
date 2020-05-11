@@ -3,7 +3,7 @@ import filelock
 from pyppl.plugin import hookimpl
 from pyppl.logger import Logger
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 logger = Logger(plugin='lock') # pylint: disable=invalid-name
 
